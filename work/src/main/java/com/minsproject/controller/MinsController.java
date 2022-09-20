@@ -207,7 +207,6 @@ public class MinsController {
 		
 		return rslt;
 	}
-
 	
 	/**
 	 * 블로그 검색 API (네이버)
@@ -244,7 +243,7 @@ public class MinsController {
 			throw new RuntimeException("검색어 필수 입력사항");
 		}
 
-
+		//검색어 인코딩
         String text = null;
         try {
             text = URLEncoder.encode(query, "UTF-8");
@@ -252,8 +251,8 @@ public class MinsController {
             throw new RuntimeException("검색어 인코딩 실패", e);
         }
         
+        //URL 조립
         String etc = "&start=" + page + "&display=" + size;
-
         String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + text + etc;    // JSON 결과
 		
         Map<String, String> requestHeaders = new HashMap<>();
@@ -261,6 +260,7 @@ public class MinsController {
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
         String responseBody = getNaverApi(apiURL,requestHeaders);
 		
+        //ResponseEntity 객체에 결과 세팅
 		ResponseEntity<String> rslt = new ResponseEntity<String>(responseBody, null, HttpStatus.valueOf(200));
 		
 		return rslt;
@@ -273,7 +273,6 @@ public class MinsController {
             for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
                 con.setRequestProperty(header.getKey(), header.getValue());
             }
-
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
@@ -304,7 +303,6 @@ public class MinsController {
 
         try (BufferedReader lineReader = new BufferedReader(streamReader)) {
             StringBuilder responseBody = new StringBuilder();
-
 
             String line;
             while ((line = lineReader.readLine()) != null) {

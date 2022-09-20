@@ -64,7 +64,6 @@ public class MinsController {
 			// 블로그 검색 API 호출 (카카오)
 			ResponseEntity<String> rslt = this.blogSearchKakao(request);
 			model.addAttribute("search_result", rslt);
-			throw new Exception("테스트");
 		}catch(Exception e) {
 			//카카오 블로그 검색 API 오류일 경우 네이버 검색 API 호출
 			ResponseEntity<String> rslt = this.blogSearchNaver(request);
@@ -72,17 +71,8 @@ public class MinsController {
 		}
 		
 		//인기 검색어 조회 
-		List<PopSearchWord> popSearchWordList = this.getPopSearchWordList();
-		
-		if(popSearchWordList.size() > 0) {
-			
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			String jsonString = objectMapper.writeValueAsString(popSearchWordList);
-			
-			ResponseEntity<String> rslt = new ResponseEntity<String>(jsonString, null, HttpStatus.valueOf(200));
-			model.addAttribute("pop_search_word_result", rslt);
-		}
+		ResponseEntity<String> rslt = this.getPopSearchWordList();
+		model.addAttribute("pop_search_word_result", rslt);
 
 		return "search";
 	}
@@ -164,7 +154,7 @@ public class MinsController {
 	}
 	
 	//인기 검색어 조회
-	private List<PopSearchWord> getPopSearchWordList() throws Exception {
+	private ResponseEntity<String> getPopSearchWordList() throws Exception {
 		PopSearchWord popSearchWord = new PopSearchWord();
 		List<PopSearchWord> popSearchWordList = new ArrayList<PopSearchWord>();
 		
@@ -204,7 +194,17 @@ public class MinsController {
 		    con.close();
 		}
 		
-		return popSearchWordList;
+		ResponseEntity<String> rslt = null;
+		
+		if(popSearchWordList.size() > 0) {
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			String jsonString = objectMapper.writeValueAsString(popSearchWordList);
+			
+			rslt = new ResponseEntity<String>(jsonString, null, HttpStatus.valueOf(200));
+		}
+		
+		return rslt;
 	}
 
 	

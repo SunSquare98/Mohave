@@ -1,6 +1,5 @@
 package com.minsproject.controller;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +36,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.minsproject.dto.PopSearchWord;
 import com.minsproject.entity.SchWord;
 import com.minsproject.entity.SchWordRepository;
@@ -171,6 +171,7 @@ public class MinsController {
 		
 		PreparedStatement ps  = con.prepareStatement(sql.toString());
 		ResultSet rs = null;
+		
 		try {	
 			rs = ps.executeQuery();
 			
@@ -187,7 +188,7 @@ public class MinsController {
 		    rs.close();
 		    con.close();
 		} catch (Exception e) {
-            throw new RuntimeException("인기검색어 DB 조회 오류", e);
+            throw new RuntimeException("인기검색어 조회 오류", e);
         }finally {
 			ps.close();
 		    rs.close();
@@ -215,6 +216,7 @@ public class MinsController {
 	 * @throws Exception
 	 */
 	private ResponseEntity<String> blogSearchNaver(HttpServletRequest request) throws Exception {
+		//애플리케이션 클라이언트 정보 세팅
 		String clientId = "pwEVNO3LbWASFeo_KoA7"; //애플리케이션 클라이언트 아이디
         String clientSecret = "0E66lgde4b"; //애플리케이션 클라이언트 시크릿
         

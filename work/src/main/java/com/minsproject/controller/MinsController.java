@@ -61,10 +61,12 @@ public class MinsController {
 		
 		//블로그 검색 API 호출
 		try {
+			// 블로그 검색 API 호출 (카카오)
 			ResponseEntity<String> rslt = this.blogSearchKakao(request);
 			model.addAttribute("search_result", rslt);
+			throw new Exception("테스트");
 		}catch(Exception e) {
-			//카카오 API 오류일 경우 네이버 검색 API 호출
+			//카카오 블로그 검색 API 오류일 경우 네이버 검색 API 호출
 			ResponseEntity<String> rslt = this.blogSearchNaver(request);
 			model.addAttribute("search_result", rslt);
 		}
@@ -84,7 +86,14 @@ public class MinsController {
 
 		return "search";
 	}
+	
 
+	/**
+	 * 블로그 검색 API (카카오)
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	private ResponseEntity<String> blogSearchKakao(HttpServletRequest request) throws Exception {
 
 		//파라미터 세팅
@@ -109,8 +118,7 @@ public class MinsController {
 		
 		//검색어 필수 입력 체크
 		if(query.isEmpty()) {
-			Exception ex = new Exception("검색어 필수 입력사항");
-			throw ex;
+			throw new RuntimeException("검색어 필수 입력사항");
 		}
 		
 		//카카오 REST API 호출 
@@ -122,7 +130,16 @@ public class MinsController {
 		headers.set("Authorization", appKey);
 
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-		String encodeKeyword = URLEncoder.encode(query, "UTF-8");
+		
+		//검색어 인코딩
+		String encodeKeyword = "";
+		try {
+			encodeKeyword = URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("검색어 인코딩 실패", e);
+        }
+		
+		//URI 조립
 		String etc = "&sort=" + sort + "&page=" + page + "&size=" + size;
 		String rawURI = "https://dapi.kakao.com/v2/search/blog?query=" + encodeKeyword + etc;
 
@@ -132,7 +149,6 @@ public class MinsController {
 
 		return res;
 	}
-	
 	
 	
 	//검색어 이력 등록
@@ -152,7 +168,7 @@ public class MinsController {
 		PopSearchWord popSearchWord = new PopSearchWord();
 		List<PopSearchWord> popSearchWordList = new ArrayList<PopSearchWord>();
 		
-		Connection connection = dataSource.getConnection();
+		Connection con = dataSource.getConnection();
 		
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT SCH_WORD, CNT ");
@@ -163,7 +179,7 @@ public class MinsController {
 		sql.append("         ORDER BY CNT DESC) ");
 		sql.append(" WHERE ROWNUM <= 10 ");
 		
-		PreparedStatement ps  = connection.prepareStatement(sql.toString());
+		PreparedStatement ps  = con.prepareStatement(sql.toString());
 		ResultSet rs = null;
 		try {	
 			rs = ps.executeQuery();
@@ -179,16 +195,25 @@ public class MinsController {
 			
 			ps.close();
 		    rs.close();
-		    connection.close();
-		}finally {
+		    con.close();
+		} catch (Exception e) {
+            throw new RuntimeException("인기검색어 DB 조회 오류", e);
+        }finally {
 			ps.close();
 		    rs.close();
-		    connection.close();
+		    con.close();
 		}
 		
 		return popSearchWordList;
 	}
 
+	
+	/**
+	 * 블로그 검색 API (네이버)
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	private ResponseEntity<String> blogSearchNaver(HttpServletRequest request) throws Exception {
 		String clientId = "pwEVNO3LbWASFeo_KoA7"; //애플리케이션 클라이언트 아이디
         String clientSecret = "0E66lgde4b"; //애플리케이션 클라이언트 시크릿
@@ -214,8 +239,7 @@ public class MinsController {
 		
 		//검색어 필수 입력 체크
 		if(query.isEmpty()) {
-			Exception ex = new Exception("검색어 필수 입력사항");
-			throw ex;
+			throw new RuntimeException("검색어 필수 입력사항");
 		}
 
 
@@ -223,7 +247,7 @@ public class MinsController {
         try {
             text = URLEncoder.encode(query, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("검색어 인코딩 실패",e);
+            throw new RuntimeException("검색어 인코딩 실패", e);
         }
         
         String etc = "&start=" + page + "&display=" + size;
@@ -233,14 +257,14 @@ public class MinsController {
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("X-Naver-Client-Id", clientId);
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
-        String responseBody = get(apiURL,requestHeaders);
+        String responseBody = getNaverApi(apiURL,requestHeaders);
 		
 		ResponseEntity<String> rslt = new ResponseEntity<String>(responseBody, null, HttpStatus.valueOf(200));
 		
 		return rslt;
 	}
 	
-	private static String get(String apiUrl, Map<String, String> requestHeaders){
+	private static String getNaverApi(String apiUrl, Map<String, String> requestHeaders){
         HttpURLConnection con = connect(apiUrl);
         try {
             con.setRequestMethod("GET");

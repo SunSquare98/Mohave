@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class SchWord {
+public class TbSchWord {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length = 5, nullable = false)
@@ -30,7 +30,7 @@ public class SchWord {
     
     
     @Builder
-    public SchWord(String schDate, String schWord) {
+    public TbSchWord(String schDate, String schWord) {
         this.schDate = schDate;
         this.schWord = schWord;
     }

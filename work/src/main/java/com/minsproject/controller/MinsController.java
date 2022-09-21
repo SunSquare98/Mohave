@@ -38,13 +38,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.minsproject.dto.PopSearchWord;
-import com.minsproject.entity.SchWord;
-import com.minsproject.entity.SchWordRepository;
+import com.minsproject.entity.TbSchWord;
+import com.minsproject.entity.TbSchWordRepository;
 
 @Controller
 public class MinsController {
 	@Autowired
-	SchWordRepository schWordRepository;
+	TbSchWordRepository schWordRepository;
 	
 	@Autowired
 	DataSource dataSource; 
@@ -156,7 +156,7 @@ public class MinsController {
 		LocalDate now = LocalDate.now();
 		String curDate = now.toString().replace("-", "");
 				
-		schWordRepository.save(SchWord.builder()
+		schWordRepository.save(TbSchWord.builder()
                 .schDate(curDate)
                 .schWord(searchWord)
                 .build());
@@ -173,7 +173,7 @@ public class MinsController {
 		sql.append("SELECT SCH_WORD, CNT ");
 		sql.append("  FROM (SELECT SCH_WORD, CNT ");
 		sql.append("          FROM (SELECT SCH_WORD, COUNT(SCH_WORD) AS CNT ");
-		sql.append("                  FROM SCH_WORD ");
+		sql.append("                  FROM TB_SCH_WORD ");
 		sql.append("                 GROUP BY SCH_WORD) ");
 		sql.append("         ORDER BY CNT DESC) ");
 		sql.append(" WHERE ROWNUM <= 10 ");

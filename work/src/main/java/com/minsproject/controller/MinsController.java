@@ -59,15 +59,25 @@ public class MinsController {
 			this.setSearchHistory(searchWord);
 		}
 		
+		String exception_yn = request.getParameter("exception_yn");
+		
 		//블로그 검색 API 호출
 		try {
-			// 블로그 검색 API 호출 (카카오)
+			// 블로그 검색 API 호출 (다음카카오)
 			ResponseEntity<String> rslt = this.blogSearchKakao(request);
 			model.addAttribute("search_result", rslt);
+			model.addAttribute("search_API", "Daum Kakao API");
+			
+			//Test Code - 예외를 일으켜 네이버 검색 API를 호추하도록 한다.
+			if("Y".equals(exception_yn)) {
+				throw new RuntimeException("다음카카오 API 예외발생!");
+			}
+			
 		}catch(Exception e) {
-			//카카오 블로그 검색 API 오류일 경우 네이버 검색 API 호출
+			//다음카카오 블로그 검색 API 오류일 경우 네이버 검색 API 호출
 			ResponseEntity<String> rslt = this.blogSearchNaver(request);
 			model.addAttribute("search_result", rslt);
+			model.addAttribute("search_API", "Naver API");
 		}
 		
 		//인기 검색어 조회 
@@ -79,7 +89,7 @@ public class MinsController {
 	
 
 	/**
-	 * 블로그 검색 API (카카오)
+	 * 블로그 검색 API (다음카카오)
 	 * @param request
 	 * @return
 	 * @throws Exception

@@ -3,9 +3,9 @@
 
 ## Run
 
-java -jar SunSquare98_Release_Version_1.1.jar
+java -jar SunSquare98_Release_Version_1.2.jar
 
-https://github.com/SunSquare98/Mohave/releases/download/v1.1/SunSquare98_Release_Version_1.1.jar
+https://github.com/SunSquare98/Mohave/releases/download/v1.2/SunSquare98_Release_Version_1.2.jar
 
 ## Test
 

@@ -14,7 +14,7 @@
 
 java -Dfile.encoding=UTF-8 -jar SunSquare98_Release_Version_1.3.jar
 
-※ 주의 인코딩 문제 발생할 수 있으므로 위 스크립트로 실행한다.
+※ 주의!! 인코딩 문제 발생할 수 있으므로 위 스크립트로 실행한다.
 
 
 [Download jar] https://github.com/SunSquare98/Mohave/releases/download/v1.3/SunSquare98_Release_Version_1.3.jar

@@ -41,7 +41,6 @@ import com.minsproject.dto.PopSearchWord;
 import com.minsproject.entity.SchWord;
 import com.minsproject.entity.SchWordRepository;
 
-
 @Controller
 public class MinsController {
 	@Autowired
@@ -265,9 +264,12 @@ public class MinsController {
         String etc = "&start=" + page + "&display=" + size;
         String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + text + etc;    // JSON 결과
 		
+        //헤더 조립
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("X-Naver-Client-Id", clientId);
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
+        
+        //네이버 API 호출
         String responseBody = getNaverApi(apiURL,requestHeaders);
 		
         //ResponseEntity 객체에 결과 세팅
